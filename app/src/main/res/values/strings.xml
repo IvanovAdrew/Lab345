@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Lab345UniCHNU</string>
+    <string-array name="smartphones_names_full">
+        <item>Meizu</item>
+        <item>Huawei</item>
+        <item>Google Pixel</item>
+        <item>Iphone</item>
+    </string-array>
+    <string-array name="price_of_phones">
+        <item>300</item>
+        <item>500</item>
+        <item>700</item>
+        <item>1300</item>
+    </string-array>
+</resources>
