@@ -1,13 +1,21 @@
-package com.example.lab345unichnu
+package com.example.lab345unichnu.presentation
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.lab345unichnu.R
+import com.example.lab345unichnu.data.model.Phone
+import java.io.File
 
-class CustomAdapter(private val dataSet: ArrayList<Phone>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(private val dataSet: List<Phone>, private val context: Context) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using
@@ -35,14 +43,18 @@ class CustomAdapter(private val dataSet: ArrayList<Phone>) : RecyclerView.Adapte
         return ViewHolder(view)
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        val item = dataSet[position]
 
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
-        viewHolder.name.text = dataSet[position].name
-        viewHolder.image.setImageResource(dataSet[position].image)
-        viewHolder.price.text = dataSet[position].price.toString() + "$"
+        viewHolder.name.text = item.name
+        viewHolder.price.text = "${item.price}$"
+
+        item.image?.let { imagePath ->
+            Glide.with(context)
+                .load(File(imagePath)) // Передаємо файл напряму
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC) // Кешування
+                .into(viewHolder.image)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
