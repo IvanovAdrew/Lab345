@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.lab345unichnu.R
-import com.example.lab345unichnu.data.model.Phone
+import com.example.lab345unichnu.data.local.models.Device
 import java.io.File
 
 class CustomPhoneAdapter(
-    private val dataSet: List<Phone>,
+    private val dataSet: List<Device>,
     private val context: Context
 ) : RecyclerView.Adapter<CustomPhoneAdapter.ViewHolder>() {
 
@@ -48,7 +48,7 @@ class CustomPhoneAdapter(
         val item = dataSet[position]
 
         viewHolder.name.text = item.name
-        viewHolder.price.text = "${item.price}$"
+        viewHolder.price.text = "${item.type}"
 
         item.image?.let { imagePath ->
             Glide.with(context)

@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
-import com.example.lab345unichnu.data.model.Phone
+import com.example.lab345unichnu.data.local.models.Device
 import com.example.lab345unichnu.repository.PhonesRepository
 import dagger.hilt.android.HiltAndroidApp
 import java.io.File
@@ -27,7 +27,6 @@ class MyApplication: Application() {
 
     private fun addDefaultPhonesToDatabase() {
         val namesOfPhones = resources.getStringArray(R.array.smartphones_names_full)
-        val priceOfPhones = resources.getStringArray(R.array.price_of_phones)
 
         val bitmap1 = BitmapFactory.decodeResource(resources, R.drawable.meizu_pro_7_plus)
         val uri1 = saveImageToAppStorage(this, bitmap1, "meizu_pro_7_plus.png")
@@ -38,10 +37,10 @@ class MyApplication: Application() {
         val bitmap4 = BitmapFactory.decodeResource(resources, R.drawable.iphone)
         val uri4 = saveImageToAppStorage(this, bitmap4, "iphone.png")
 
-        phonesRepository.insertPhone(Phone(1, namesOfPhones[0], uri1,priceOfPhones[0].toInt()))
-        phonesRepository.insertPhone(Phone(2, namesOfPhones[1], uri2,priceOfPhones[1].toInt()))
-        phonesRepository.insertPhone(Phone(3, namesOfPhones[2], uri3,priceOfPhones[2].toInt()))
-        phonesRepository.insertPhone(Phone(4, namesOfPhones[3], uri4,priceOfPhones[3].toInt()))
+        phonesRepository.insertPhone(Device(1, namesOfPhones[0], uri1,"smartphone"))
+        phonesRepository.insertPhone(Device(2, namesOfPhones[1], uri2,"smartphone"))
+        phonesRepository.insertPhone(Device(3, namesOfPhones[2], uri3,"smartphone"))
+        phonesRepository.insertPhone(Device(4, namesOfPhones[3], uri4,"smartphone"))
     }
 
     private fun isFirstLaunch(): Boolean {

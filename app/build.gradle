@@ -57,6 +57,9 @@ dependencies {
     // LiveData
     implementation libs.androidx.lifecycle.livedata.ktx
     implementation libs.hilt.android
+    implementation libs.retrofit
+    implementation libs.converter.gson
+    implementation libs.logging.interceptor
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

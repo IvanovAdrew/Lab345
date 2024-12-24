@@ -36,5 +36,8 @@ class MainActivity : AppCompatActivity() {
             adapter = CustomPhoneAdapter(phones, this)
             binding.mainRclView.adapter = adapter
         }
+        binding.btnRefresh.setOnClickListener {
+            mainViewmodel.fetchAndStoreProducts()
+        }
     }
 }
