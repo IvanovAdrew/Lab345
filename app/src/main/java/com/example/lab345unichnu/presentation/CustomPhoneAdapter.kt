@@ -1,8 +1,6 @@
 package com.example.lab345unichnu.presentation
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +13,10 @@ import com.example.lab345unichnu.R
 import com.example.lab345unichnu.data.model.Phone
 import java.io.File
 
-class CustomAdapter(private val dataSet: List<Phone>, private val context: Context) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomPhoneAdapter(
+    private val dataSet: List<Phone>,
+    private val context: Context
+) : RecyclerView.Adapter<CustomPhoneAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using

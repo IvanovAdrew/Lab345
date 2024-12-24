@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -25,11 +26,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "1.8"
     }
     buildFeatures{
         viewBinding = true
@@ -43,17 +44,19 @@ dependencies {
     implementation libs.material
     implementation libs.androidx.activity
     implementation libs.androidx.constraintlayout
+
+    ksp libs.androidx.room.compiler
+    ksp libs.hilt.android.compiler
+
     implementation libs.glide
-    def room_version = "2.6.1"
-
-    implementation "androidx.room:room-runtime:$room_version"
-
-    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
-    // See KSP Quickstart to add KSP to your build
-    ksp "androidx.room:room-compiler:$room_version"
-
-
-
+    implementation libs.androidx.room.runtime
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation(libs.androidx.room.ktx)
+    // ViewModel
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    // LiveData
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.hilt.android
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

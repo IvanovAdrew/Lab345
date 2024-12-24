@@ -1,4 +1,4 @@
-package com.example.lab345unichnu.data.database
+package com.example.lab345unichnu.data.model.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
