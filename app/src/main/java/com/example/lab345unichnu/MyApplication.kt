@@ -2,15 +2,10 @@ package com.example.lab345unichnu
 
 import android.app.Application
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Environment
 import com.example.lab345unichnu.data.local.models.Device
 import com.example.lab345unichnu.repository.PhonesRepository
 import dagger.hilt.android.HiltAndroidApp
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -29,18 +24,18 @@ class MyApplication: Application() {
         val namesOfPhones = resources.getStringArray(R.array.smartphones_names_full)
 
         val bitmap1 = BitmapFactory.decodeResource(resources, R.drawable.meizu_pro_7_plus)
-        val uri1 = saveImageToAppStorage(this, bitmap1, "meizu_pro_7_plus.png")
+        val uri1 = phonesRepository.saveBitmapImageToAppStorage(this, bitmap1, "meizu_pro_7_plus.png")
         val bitmap2 = BitmapFactory.decodeResource(resources, R.drawable.huawei)
-        val uri2 = saveImageToAppStorage(this, bitmap2, "huawei.png")
+        val uri2 = phonesRepository.saveBitmapImageToAppStorage(this, bitmap2, "huawei.png")
         val bitmap3 = BitmapFactory.decodeResource(resources, R.drawable.google_pixel_last)
-        val uri3 = saveImageToAppStorage(this, bitmap3, "google_pixel_last.png")
+        val uri3 = phonesRepository.saveBitmapImageToAppStorage(this, bitmap3, "google_pixel_last.png")
         val bitmap4 = BitmapFactory.decodeResource(resources, R.drawable.iphone)
-        val uri4 = saveImageToAppStorage(this, bitmap4, "iphone.png")
+        val uri4 = phonesRepository.saveBitmapImageToAppStorage(this, bitmap4, "iphone.png")
 
-        phonesRepository.insertPhone(Device(1, namesOfPhones[0], uri1,"smartphone"))
-        phonesRepository.insertPhone(Device(2, namesOfPhones[1], uri2,"smartphone"))
-        phonesRepository.insertPhone(Device(3, namesOfPhones[2], uri3,"smartphone"))
-        phonesRepository.insertPhone(Device(4, namesOfPhones[3], uri4,"smartphone"))
+        phonesRepository.insertPhone(Device(0, namesOfPhones[0], uri1,"smartphone"), this)
+        phonesRepository.insertPhone(Device(0,namesOfPhones[1], uri2,"smartphone"),this)
+        phonesRepository.insertPhone(Device(0,namesOfPhones[2], uri3,"smartphone"),this)
+        phonesRepository.insertPhone(Device(0,namesOfPhones[3], uri4,"smartphone"),this)
     }
 
     private fun isFirstLaunch(): Boolean {
@@ -54,19 +49,5 @@ class MyApplication: Application() {
         return false
     }
 
-    private fun saveImageToAppStorage(context: Context, bitmap: Bitmap, fileName: String): String? {
-        val directory = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "MyAppImages")
-        if (!directory.exists()) directory.mkdirs()
 
-        val file = File(directory, fileName)
-        return try {
-            FileOutputStream(file).use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            }
-            file.absolutePath
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        }
-    }
 }

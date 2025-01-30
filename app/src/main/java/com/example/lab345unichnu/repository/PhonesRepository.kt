@@ -3,7 +3,11 @@ package com.example.lab345unichnu.repository
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.os.Environment
 import androidx.lifecycle.LiveData
+import coil.Coil
+import coil.request.ImageRequest
 import com.example.lab345unichnu.data.local.models.Device
 import com.example.lab345unichnu.data.local.DeviceDao
 import com.example.lab345unichnu.data.remote.api.ProductsApiService
@@ -13,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.UUID
@@ -24,10 +29,13 @@ class PhonesRepository @Inject constructor(private val deviceDao: DeviceDao, pri
 
     fun getAllPhones(): LiveData<List<Device>> = deviceDao.getAll()
 
-    fun insertPhone(device: Device){
+    fun insertPhone(device: Device, context: Context){
+
         CoroutineScope(Dispatchers.IO).launch {
-            deviceDao.insertAll(listOf(device))
+            device.image = device.image?.let { coilUrlToBitmap(context, it)?.let { saveBitmapImageToAppStorage(context = context, bitmap = it, device.name) } }
+            deviceDao.insert(device)
         }
+
     }
 
     suspend fun processAndStoreProducts(
@@ -60,7 +68,20 @@ class PhonesRepository @Inject constructor(private val deviceDao: DeviceDao, pri
             e.printStackTrace()
         }
     }
-    suspend fun downloadImage(context: Context, url: String): String? {
+    suspend fun deleteProduct(device: Device){
+        CoroutineScope(Dispatchers.IO).launch {
+            deviceDao.delete(device)
+        }
+    }
+    suspend fun editDevice(device: Device, context: Context){
+
+        CoroutineScope(Dispatchers.IO).launch {
+            device.image = device.image?.let { coilUrlToBitmap(context, it)?.let { saveBitmapImageToAppStorage(context = context, bitmap = it, device.name) } }
+            deviceDao.insert(device)
+        }
+
+    }
+    private suspend fun downloadImage(context: Context, url: String): String? {
         return try {
             val bitmap = withContext(Dispatchers.IO) {
                 val connection = URL(url).openConnection() as HttpURLConnection
@@ -76,5 +97,39 @@ class PhonesRepository @Inject constructor(private val deviceDao: DeviceDao, pri
             null
         }
     }
+
+    suspend fun coilUrlToBitmap(context: Context, imageUrl: String): Bitmap? {
+        return try {
+            val request = ImageRequest.Builder(context)
+                .data(imageUrl)
+                .allowHardware(false) // Обязательно, иначе Bitmap будет null
+                .build()
+
+            val drawable = Coil.imageLoader(context).execute(request).drawable
+            (drawable as? BitmapDrawable)?.bitmap
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun saveBitmapImageToAppStorage(context: Context, bitmap: Bitmap, name: String = ""): String? {
+        val directory = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "MyAppImages")
+        if (!directory.exists()) directory.mkdirs()
+
+        val fileName = "${name}_image_${System.currentTimeMillis()}.png" // Унікальне ім'я
+        val file = File(directory, fileName)
+
+        return try {
+            FileOutputStream(file).use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            }
+            file.absolutePath
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 
 }

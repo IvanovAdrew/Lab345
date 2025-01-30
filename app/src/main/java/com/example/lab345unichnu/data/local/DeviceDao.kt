@@ -16,6 +16,8 @@ interface DeviceDao {
     suspend fun insertAll(devices: List<Device>)
     @Query("SELECT * FROM device WHERE uid IN (:deviceIds)")
     fun loadAllByIds(deviceIds: IntArray): LiveData<List<Device>>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(device: Device)
     @Delete
     suspend fun delete(device: Device)
 }

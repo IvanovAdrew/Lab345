@@ -6,12 +6,12 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Device(
-    @PrimaryKey
-    val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    val uid: Int = 0,
     @ColumnInfo (name = "name_of_phone")
-    val name: String,
+    var name: String,
     @ColumnInfo (name = "link_to_the_image")
-    val image: String?,
+    var image: String?,
     @ColumnInfo(name = "type_of_device")
-    val type: String?
+    var type: String?
 )
