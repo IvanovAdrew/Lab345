@@ -19,11 +19,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.lab345unichnu.R
 import java.io.File
 
@@ -102,7 +105,12 @@ fun NonEditablePhoneColumn(
             }
 
             AsyncImage(
-                model = deviceUI.device.image.toString(),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(deviceUI.device.image.toString())
+                    .size(800)
+                    .diskCachePolicy(CachePolicy.ENABLED) // Включаем кеширование на диск
+                    .memoryCachePolicy(CachePolicy.ENABLED) // Включаем кеш в RAM
+                    .build(),
                 contentDescription = "Loaded Image",
                 modifier = Modifier
                     .fillMaxWidth().padding(horizontal = 30.dp),

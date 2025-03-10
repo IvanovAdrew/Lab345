@@ -47,18 +47,6 @@ class MainViewmodel @Inject constructor(
         }
     }
 
-//    val devicesState = phonesRepository.getAllPhones().asFlow()
-//        .map { devices ->
-//            devices.map {
-//                DeviceUI(device = it)
-//            }
-//        }.stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5000),
-//            initialValue = emptyList()
-//        )
-
-
     fun fetchAndStoreProducts() {
         viewModelScope.launch {
             phonesRepository.processAndStoreProducts(context)

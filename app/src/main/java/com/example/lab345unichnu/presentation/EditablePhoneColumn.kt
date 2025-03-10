@@ -30,12 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.lab345unichnu.R
 import com.example.lab345unichnu.data.local.models.Device
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,7 +74,9 @@ fun EditablePhoneColumn(
                         )
                     )
                 }
-                OverlayEditableImage(imageStringResource,{newImagePath -> imageStringResource = newImagePath})
+                OverlayEditableImage(imageStringResource) { newImagePath ->
+                    imageStringResource = newImagePath
+                }
                 Box(
                     modifier = Modifier
                         .padding(20.dp)
@@ -159,9 +164,15 @@ fun OverlayEditableImage(imagePath: String, changingImagePath: (String) -> Unit)
     ) {
         // Основное изображение
         AsyncImage(
-            model = imagePath,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imagePath)
+                .size(800)
+                .diskCachePolicy(CachePolicy.ENABLED) // Включаем кеширование на диск
+                .memoryCachePolicy(CachePolicy.ENABLED) // Включаем кеш в RAM
+                .build(),
             contentDescription = "Loaded Image",
             modifier = Modifier.fillMaxWidth(),
+
             contentScale = ContentScale.Fit,
         )
 

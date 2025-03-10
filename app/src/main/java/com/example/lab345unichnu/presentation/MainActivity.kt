@@ -11,6 +11,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +25,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -29,11 +36,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,8 +66,11 @@ import coil.compose.AsyncImage
 import com.example.lab345unichnu.R
 import com.example.lab345unichnu.data.local.models.Device
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.io.File
 
 @AndroidEntryPoint
@@ -109,30 +122,53 @@ class MainActivity : ComponentActivity() {
         onRevertCreating: (DeviceUI?) -> Unit,
         onCreate: () ->Unit
     ) {
+        val scrollState = rememberLazyListState()
+        val coroutineScope = rememberCoroutineScope()
         Column(modifier = modifier) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
+
+            LazyColumn(modifier = Modifier.weight(1f), state = scrollState) {
+
                 items(creatingPhoneList){ creatingPhone ->
-                    EditablePhoneColumn(
-                        deviceUI = creatingPhone,
-                        onSave =  onSaveCreating ,
-                        onRevert = onRevertCreating
-                    )
+                     // Флаг первого появления
+
+
+
+                        EditablePhoneColumn(
+                            deviceUI = creatingPhone,
+                            onSave = onSaveCreating,
+                            onRevert = onRevertCreating,
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .animateItem()
+                        )
+
+
 
                 }
-                items(phoneList.reversed()) { phone ->
-                    if (!phone.isEditing) {
-                        NonEditablePhoneColumn(
-                            deviceUI =  phone,
-                            onEdit = onEdit,
-                            onDelete = onDelete
-                        )
-                    } else {
-                        EditablePhoneColumn(
-                            deviceUI = phone,
-                            onSave = onSave,
-                            onRevert = onRevert
-                        )
-                    }
+                items(phoneList.reversed(), key = { phone -> phone.device.uid }) { phone ->
+
+                        if (!phone.isEditing) {
+                            NonEditablePhoneColumn(
+                                deviceUI = phone,
+                                onEdit = onEdit,
+                                onDelete = onDelete,
+                                modifier = Modifier
+                                    .padding(20.dp)
+                                    .animateItem()
+                            )
+                        } else {
+                            EditablePhoneColumn(
+                                deviceUI = phone,
+                                onSave = onSave,
+                                onRevert = onRevert,
+                                modifier = Modifier
+                                    .padding(20.dp)
+                                    .animateItem()
+                            )
+                        }
+
+
+
                 }
 
             }
@@ -140,7 +176,12 @@ class MainActivity : ComponentActivity() {
                 Button(onClick = onUpdate, modifier = Modifier.weight(1f).padding(horizontal = 10.dp)) {
                     Text(text = "Refresh")
                 }
-                Button(onClick = onCreate, modifier = Modifier.weight(1f).padding(horizontal = 10.dp)) {
+                Button(onClick = {
+                    onCreate()
+                    coroutineScope.launch {
+                        scrollState.animateScrollToItem(0)
+                    }
+                                 }, modifier = Modifier.weight(1f).padding(horizontal = 10.dp)) {
                     Text(text = "Add new Item")
                 }
             }
